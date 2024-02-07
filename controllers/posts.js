@@ -29,12 +29,22 @@ export const updatePost = async (req, res) => {
 
     if (!mongoose.Types.ObjectId.isValid(_id))
         return res.status(404).send('No such post with corresponding id ');
-    try {
-        const updatedPost = await PostMessage.findByIdAndUpdate(_id, post, {
+    const updatedPost = await PostMessage.findByIdAndUpdate(
+        _id,
+        { ...post, _id },
+        {
             new: true
-        });
-        res.status(201).json(updatedPost);
-    } catch (err) {
-        res.status(409).json({ message: err.message });
-    }
+        }
+    );
+    res.json(updatedPost);
+};
+
+export const deletePost = async (req, res) => {
+    const { id: _id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(_id))
+        return res.status(404).send('No such post with corresponding id ');
+
+    await PostMessage.findByIdAndDelete(_id);
+    res.json({ message: 'Post has been successfuly deleted.' });
 };
