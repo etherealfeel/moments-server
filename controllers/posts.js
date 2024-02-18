@@ -28,12 +28,12 @@ export const getPosts = async (req, res) => {
 };
 
 export const getFilteredPosts = async (req, res) => {
-    const { searchQuery, tags } = req.query;
+    const { searchQuery, tags: queryTags } = req.query;
     try {
-        const title = new RegExp(searchQuery, 'i');
-        const posts = await PostMessage.find({
-            $or: [{ title }, { tags: { $in: tags.split(',') } }],
-        });
+        const regex = new RegExp(searchQuery, 'i');
+
+        const posts = await PostMessage.find(queryTags ? { tags: { $in: queryTags } } : { title: regex });
+
         res.json({ data: posts });
     } catch (error) {
         res.status(404).json();
